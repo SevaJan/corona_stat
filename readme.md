@@ -2,6 +2,6 @@ main.py: парсер, который вытаскивает с сайтов ht
 
 virtualenv: виртуальное окружение, создаётся по гайду https://cloud.ibm.com/docs/openwhisk?topic=cloud-functions-prep#prep_python_local_virtenv;
 
-statistics.zip: zip файл, в котором заархивированы main.py и virtualenv.
+russia.zip: zip файл, в котором заархивированы main.py и virtualenv.
 
 Чтобы бот обращался к IBM Cloud Functions, нужно включить Webhooks, в скилле указать URL и добавить CF-based API key for this namespace.
