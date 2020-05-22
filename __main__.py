@@ -11,10 +11,6 @@ def get_statistics(parameters):
     russia = str(parameters.get('russia'))
     type_of_currency = str(parameters.get('testinput'))
 
-    #world = 'Vatican City'
-    #russia = 'None'
-    #type_of_currency = 'None'
-
     if type_of_currency != 'None':
         return get_rate(type_of_currency)
     elif world != 'None':
