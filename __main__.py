@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pycbrf
 import datetime
 import json
+import re
 
 def get_statistics(parameters):
     world = str(parameters.get('world'))
@@ -98,8 +99,8 @@ def worldometers_info(location):
     t_died = data[2]
     t_died_new = data[3]
 
-    search_date = str(bs.find_all('div'))
-    start_date = search_date.find('<div style="font-size:13px; color:#999; margin-top:5px; text-align:center">Last updated: ') + len('<div style="font-size:13px; color:#999; margin-top:5px; text-align:center">Last updated: ')
+    search_date = str(bs.find('div', {'style': 'font-size:13px; color:#999; margin-top:5px; text-align:center'}))
+    start_date = search_date.find('Last updated: ') + len('Last updated: ')
     date = ''
 
     while search_date[start_date] != '<':
@@ -143,39 +144,12 @@ def stopcoronavirus_rf(location):
     start_global = search_regions.find(location)
 
     start_sick = search_regions.find('"sick":', start_global) + len('"sick":')
-    start_healed = search_regions.find('"healed":', start_global) + len('"healed":')
-    start_died = search_regions.find('"died":', start_global) + len('"died":')
-    start_sick_incr = search_regions.find('"sick_incr":', start_global) + len('"sick_incr":')
-    start_healed_incr = search_regions.find('"healed_incr":', start_global) + len('"healed_incr":')
     start_died_incr = search_regions.find('"died_incr":', start_global) + len('"died_incr":')
 
-    sick = healed = died = sick_incr = healed_incr = died_incr = ''
+    end_of_line = search_regions[start_died_incr:].find('}')
+    values = re.findall('(\d+)', search_regions[start_sick:start_died_incr + end_of_line])
 
-    while search_regions[start_sick] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        sick += search_regions[start_sick]
-        start_sick += 1
-
-    while search_regions[start_healed] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        healed += search_regions[start_healed]
-        start_healed += 1
-
-    while search_regions[start_died] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        died += search_regions[start_died]
-        start_died += 1
-
-    while search_regions[start_sick_incr] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        sick_incr += search_regions[start_sick_incr]
-        start_sick_incr += 1
-
-    while search_regions[start_healed_incr] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        healed_incr += search_regions[start_healed_incr]
-        start_healed_incr += 1
-
-    while search_regions[start_died_incr] in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
-        died_incr += search_regions[start_died_incr]
-        start_died_incr += 1
-
-    sick, healed, died, sick_incr, healed_incr, died_incr = "{:,}".format(int(sick)), "{:,}".format(int(healed)), "{:,}".format(int(died)), "{:,}".format(int(sick_incr)), "{:,}".format(int(healed_incr)), "{:,}".format(int(died_incr))
+    sick, healed, died, sick_incr, healed_incr, died_incr = "{:,}".format(int(values[0])), "{:,}".format(int(values[1])), "{:,}".format(int(values[2])), "{:,}".format(int(values[3])), "{:,}".format(int(values[4])), "{:,}".format(int(values[5]))
 
     search_date = str(bs.find_all('small'))
     search_date = search_date.replace('[<small>По состоянию на ', '')
